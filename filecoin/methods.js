@@ -4,6 +4,7 @@ const cbor = require('cbor')
 const hamt = require('../hamt/hamt')
 const blake = require('blakejs')
 const address = require('@openworklabs/filecoin-address')
+const BN = require('bn.js')
 
 function bytesToAddress(payload, testnet) {
   const addr = new address.Address(payload)
@@ -68,7 +69,7 @@ function encodeSend(to) {
     to,
     method: 0,
     params: '',
-    value: 0n,
+    value: new BN(0),
   }
 }
 
@@ -77,7 +78,7 @@ function encodeAddVerifier(verified, cap) {
     to: 't06',
     method: 2,
     params: cbor.encode([signer.addressAsBytes(verified), encodeBig(cap)]),
-    value: 0n,
+    value: new BN(0),
   }
 }
 
@@ -86,7 +87,7 @@ function encodeAddVerifiedClient(verified, cap) {
     to: 't06',
     method: 4,
     params: cbor.encode([signer.addressAsBytes(verified), encodeBig(cap)]),
-    value: 0n,
+    value: new BN(0),
   }
 }
 
@@ -96,7 +97,7 @@ function encodePropose(msig, msg) {
     to: msig,
     method: 2,
     params: cbor.encode([signer.addressAsBytes(msg.to), encodeBig(msg.value || 0), msg.method, msg.params]),
-    value: 0n,
+    value: new BN(0),
   }
 }
 
@@ -111,7 +112,7 @@ function encodeApprove(msig, txid, from, msg) {
     to: msig,
     method: 3,
     params: cbor.encode([txid, Buffer.from(hash, 'hex')]),
-    value: 0n,
+    value: new BN(0),
   }
 }
 
@@ -134,7 +135,7 @@ function decode(schema, data) {
     return hamt.bytesToBig(data)
   }
   if (schema === 'bigint-signed') {
-    return hamt.bytesToBig(data) / 2n
+    return hamt.bytesToBig(data).div(new BN(2))
   }
   if (schema === 'int' || schema === 'buffer' || schema === 'bool') {
     return data
@@ -261,7 +262,7 @@ function actor(address, spec) {
       // console.log("params", params)
       return {
         to: address,
-        value: 0n,
+        value: new BN(0),
         method: parseInt(num),
         params: cbor.encode(params),
       }

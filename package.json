@@ -1,6 +1,6 @@
 {
   "name": "js-hamt-filecoin",
-  "version": "0.0.1",
+  "version": "0.0.6",
   "description": "Javascript implementation of a HAMT using ipld",
   "repository": {
     "type": "git",
@@ -39,6 +39,8 @@
     "varint": "^5.0.0"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
     "eslint": "^7.7.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.22.0",

@@ -1,10 +1,11 @@
 const address = require('@openworklabs/filecoin-address')
 const sha256 = require('js-sha256')
+const BN = require('bn.js')
 
 // Get n next bits
 function nextBits(obj, n) {
   // if (obj.left < n) throw new Error("out of bits")
-  const res = (obj.num >> BigInt(obj.left - n)) & BigInt((1 << n) - 1)
+  const res = obj.num.shrn(new BN(obj.left - n)).and(new BN((1 << n) - 1))
   obj.left -= n
   return res
 }
@@ -13,11 +14,11 @@ function indexForBitPos(bp, bitfield) {
   let acc = bitfield
   let idx = 0
   while (bp > 0) {
-    if ((acc & 1n) === 1n) {
+    if (acc.and(new BN(1)).eq(new BN(1))) {
       idx++
     }
     bp--
-    acc = acc >> 1n
+    acc = acc.shrn(new BN(1))
   }
   return idx
 }
@@ -26,7 +27,7 @@ exports.nextBits = nextBits
 exports.indexForBitPos = indexForBitPos
 
 function getBit(b, n) {
-  return Number((b >> n) & 0x1n)
+  return b.shrn(n).and(new BN(0x1)).toNumber()
 }
 
 async function getValue(n, load, hv, key) {
@@ -78,10 +79,10 @@ async function forEach(n, load, cb) {
 }
 
 function bytesToBig(p) {
-  let acc = 0n
+  let acc = new BN(0)
   for (let i = 0; i < p.length; i++) {
-    acc *= 256n
-    acc += BigInt(p[i])
+    acc = acc.mul(new BN(256))
+    acc = acc.add(new BN(p[i]))
   }
   return acc
 }
@@ -145,14 +146,14 @@ async function addToArray(n, load, dataArray) {
 }
 
 function readVarInt(bytes, offset) {
-  let res = 0n
-  let acc = 1n
+  let res = new BN(0)
+  let acc = new BN(1)
   for (let i = offset; i < bytes.length; i++) {
-    res += BigInt(bytes[i] & 0x7f) * acc
+    res = res.add(new BN(bytes[i] & 0x7f).mul(acc))
     if (bytes[i] < 0x7f) {
       return res
     }
-    acc *= 128n
+    acc = acc.mul(new BN(128))
   }
   return res
 }
