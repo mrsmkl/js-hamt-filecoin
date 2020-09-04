@@ -1,10 +1,10 @@
 {
-  "name": "@keyko-io/filecoin-verifier-tools",
-  "version": "0.4.2",
+  "name": "js-hamt-filecoin",
+  "version": "0.0.1",
   "description": "Javascript implementation of a HAMT using ipld",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/keyko-io/filecoin-verifier-tools.git"
+    "url": "git+https://github.com/mrsmkl/js-hamt-filecoin.git"
   },
   "scripts": {
     "test": "npx jest",
@@ -30,17 +30,12 @@
     "blakejs": "^1.1.0",
     "cbor": "^5.0.2",
     "cids": "^0.8.3",
-    "express": "^4.17.1",
     "ipld-dag-cbor": "^0.16.0",
     "jayson": "^3.3.4",
     "jest": "^26.4.2",
     "js-sha256": "^0.9.0",
-    "murmurhash3js-revisited": "^3.0.0",
     "node-fetch": "^2.6.0",
-    "pg": "^8.3.0",
-    "pg-hstore": "^2.3.3",
     "secp256k1": "^4.0.1",
-    "sequelize": "^6.3.3",
     "varint": "^5.0.0"
   },
   "devDependencies": {
