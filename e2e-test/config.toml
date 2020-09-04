@@ -1,3 +1,0 @@
-[API]
-  ListenAddress = "/ip4/0.0.0.0/tcp/1234/http"
-  Timeout = "60s"
