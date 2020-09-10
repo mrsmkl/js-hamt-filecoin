@@ -1,7 +1,6 @@
 
-const signer = require('@zondax/filecoin-signing-tools/js')
 const cbor = require('cbor')
-const hamt = require('../hamt/hamt')
+const hamt = require('../../hamt/hamt/index')
 const blake = require('blakejs')
 const address = require('@openworklabs/filecoin-address')
 const BN = require('bn.js')
@@ -13,45 +12,6 @@ function bytesToAddress(payload, testnet) {
 
 function addressAsBytes(str) {
   return Buffer.from((address.newFromString(str)).str, 'binary')
-}
-
-async function signTx(client, indexAccount, walletContext, { to, method, params, value }) {
-  const head = await client.chainHead()
-  const address = (await walletContext.getAccounts())[indexAccount]
-
-  const state = await client.stateGetActor(address, head.Cids)
-  // console.log("params", params)
-  // console.log("state", state)
-  const msg = {
-    to: to,
-    from: address,
-    nonce: state.Nonce,
-    value: value || '0',
-    gasfeecap: '1000000000',
-    gaspremium: '15000',
-    gaslimit: 25000000,
-    method: method,
-    params: params,
-  }
-
-  return walletContext.sign(msg, indexAccount)
-}
-
-// returns tx hash
-async function sendTx(client, indexAccount, walletContext, obj) {
-  const tx = await signTx(client, indexAccount, walletContext, obj)
-  console.log('going to send', tx)
-  return await client.mpoolPush(JSON.parse(tx))
-}
-
-async function getReceipt(client, id) {
-  while (true) {
-    const res = await client.stateSearchMsg({ '/': id })
-    if (res && res.Receipt) {
-      return res.Receipt
-    }
-    await new Promise(resolve => { setTimeout(resolve, 1000) })
-  }
 }
 
 function pad(str) {
@@ -154,17 +114,22 @@ function decode(schema, data) {
       },
       asList: async (lookup) => {
         const res = []
-        await hamt.forEach(data, lookup, async (k, v) => {
+        await hamt.forEachParallel(data, lookup, async (k, v) => {
           res.push([decode(schema.key, k), decode(schema.value, v)])
         })
         return res
       },
       asObject: async (lookup) => {
         const res = {}
-        await hamt.forEach(data, lookup, async (k, v) => {
+        await hamt.forEachParallel(data, lookup, async (k, v) => {
           res[decode(schema.key, k)] = decode(schema.value, v)
         })
         return res
+      },
+      asStream: async (lookup, cb) => {
+        await hamt.forEachParallel(data, lookup, async (k, v) => {
+          cb(decode(schema.key, k), decode(schema.value, v))
+        })
       },
     }
   }
@@ -343,21 +308,21 @@ function parse(tx) {
   }
 }
 
+const rootkey = actor('t080', multisig)
+const verifregActor =  actor('t06', verifreg)
+
 module.exports = {
   encodeSend,
   encodeApprove,
   encodePropose,
   encodeAddVerifier,
   encodeAddVerifiedClient,
-  sendTx,
-  signTx,
   decode,
   encode,
   actor,
-  getReceipt,
   multisig,
   pending,
-  rootkey: actor('t080', multisig),
-  verifreg: actor('t06', verifreg),
   parse,
+  rootkey,
+  verifregActor,
 }

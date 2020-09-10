@@ -3,7 +3,7 @@ const { LotusRPC } = require('@filecoin-shipyard/lotus-client-rpc')
 const { NodejsProvider: Provider } = require('@filecoin-shipyard/lotus-client-provider-nodejs')
 const { testnet } = require('@filecoin-shipyard/lotus-client-schema')
 
-exports.make = function (endpointUrl) {
+function make(endpointUrl) {
   const provider = new Provider(endpointUrl)
 
   const client = new LotusRPC(provider, { schema: testnet.fullNode })
@@ -20,4 +20,9 @@ exports.make = function (endpointUrl) {
       return (await client.chainGetNode(`${state}/${path}`)).Obj
     },
   }
+}
+
+
+module.exports = {
+  make,
 }
