@@ -17,7 +17,7 @@ function bytesToBigRev(p) {
     return acc
 }
 
-function decodeRLE(buf) {
+function decodeRuns(buf) {
     let obj = {
       left: 8*buf.length,
       num: bytesToBigRev(buf),
@@ -60,11 +60,26 @@ function decodeRLE(buf) {
     }
     return {first, runs:res}
   }
-  
+
+  function decodeRLE(buf) {
+    let {first, runs} = decodeRuns(buf)
+    let cur = first
+    let res = []
+    let acc = 0
+    for (let r of runs) {
+      for (let i = 0; i < r; i++) {
+        if (cur == 1) res.push(acc)
+        acc++
+      }
+      cur = 1-cur
+    }
+    return res
+  }
+
   let str = "XC217tRWVGWpoqzc6kiVFbuWiFMRippih6JZKla+lwnF73RjsaRsVUoVZU8RO61Kpdwplq51q5crzfrVTq9+r9Xqd4oXm81ep9Ts9jrl261OInrFSiyKFYWLolIRi54SiGavk4i7lVKp2yt1FKlXDExoolZXsOqVespqRZEqd6MTsEq8ohKoaoL+PXCiEZVQ5KOakpgEIi+VZvEVJxytVj0lrXYmqonoZeJIFBWpY0nayjuK0ukpzopcut1ZMRXrlnRFcUp3Ks4olRSx0klEUVEqnYozJb2SAkWl26y0ajVnW1E6JUVxvN/rXLmjWIpScqZcIasBCSVIdkB0EQI="  
   let buf = Buffer.from(str, "base64")
 
 let x = decodeRLE(buf)
-
-for (let i of x.runs) console.log(i)
+// console.log(x)
+for (let i of x) console.log(i)
 
