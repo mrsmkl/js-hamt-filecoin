@@ -84,7 +84,7 @@ function isType(schema) {
   return false
 }
 
-function decode(schema, data) {
+function decodeAux(schema, data) {
   if (schema === 'address' && typeof data === 'string') {
     return bytesToAddress(Buffer.from(data, 'base64'), true)
   }
@@ -110,47 +110,47 @@ function decode(schema, data) {
     return {
       find: async (lookup, key) => {
         const res = await hamt.find(data, lookup, encode(schema.key, key))
-        return decode(schema.value, res)
+        return decodeAux(schema.value, res)
       },
       asList: async (lookup) => {
         const res = []
         await hamt.forEachParallel(data, lookup, async (k, v) => {
-          res.push([decode(schema.key, k), decode(schema.value, v)])
+          res.push([decodeAux(schema.key, k), decodeAux(schema.value, v)])
         })
         return res
       },
       asObject: async (lookup) => {
         const res = {}
         await hamt.forEachParallel(data, lookup, async (k, v) => {
-          res[decode(schema.key, k)] = decode(schema.value, v)
+          res[decodeAux(schema.key, k)] = decodeAux(schema.value, v)
         })
         return res
       },
       asStream: async (lookup, cb) => {
         await hamt.forEachParallel(data, lookup, async (k, v) => {
-          cb(decode(schema.key, k), decode(schema.value, v))
+          cb(decodeAux(schema.key, k), decodeAux(schema.value, v))
         })
       },
     }
   }
   if (schema instanceof Array) {
     if (schema[0] === 'list') {
-      return data.map(a => decode(schema[1], a))
+      return data.map(a => decodeAux(schema[1], a))
     }
     if (schema[0] === 'cbor') {
-      return decode(schema[1], cbor.decode(data))
+      return decodeAux(schema[1], cbor.decodeAux(data))
     }
     if (schema.length !== data.length) throw new Error('schema and data length do not match')
     if (isType(schema[0])) {
       const res = []
       for (let i = 0; i < data.length; i++) {
-        res.push(decode(schema[i], data[i]))
+        res.push(decodeAux(schema[i], data[i]))
       }
       return res
     }
     const res = {}
     for (let i = 0; i < data.length; i++) {
-      res[schema[i][0]] = decode(schema[i][1], data[i])
+      res[schema[i][0]] = decodeAux(schema[i][1], data[i])
     }
     return res
   }
@@ -158,11 +158,15 @@ function decode(schema, data) {
     const res = {}
     const entries = Object.entries(schema)
     for (let i = 0; i < entries.length; i++) {
-      res[entries[i][0]] = decode(entries[i][1], data[i])
+      res[entries[i][0]] = decodeAux(entries[i][1], data[i])
     }
     return res
   }
   throw new Error(`Unknown type ${schema}`)
+}
+
+function decode(schema, data) {
+  return decodeAux(schema, hamt.makeBuffers(data))
 }
 
 function encode(schema, data) {
