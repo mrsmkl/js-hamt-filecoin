@@ -5,10 +5,11 @@ const BN = require('bn.js')
 // Get n next bits
 function nextBits(obj, n) {
   // if (obj.left < n) throw new Error("out of bits")
-  const res = obj.num.shrn(new BN(obj.left - n)).and(new BN((1 << n) - 1))
+  const res = obj.num.shrn(obj.left - n).and(new BN(1).shln(n).sub(new BN(1)))
   obj.left -= n
-  return res
+  return res.toNumber()
 }
+
 
 function indexForBitPos(bp, bitfield) {
   let acc = bitfield
