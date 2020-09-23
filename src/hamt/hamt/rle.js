@@ -28,7 +28,7 @@ function decodeRLE(buf) {
     while (obj.left > 0) {
       let b1 = nextBits(obj, 1)
       if (b1 == 1) {
-        console.log(1)
+        res.push(1)
         continue
       }
       let b2 = nextBits(obj, 1)
@@ -64,4 +64,7 @@ function decodeRLE(buf) {
   let str = "XC217tRWVGWpoqzc6kiVFbuWiFMRippih6JZKla+lwnF73RjsaRsVUoVZU8RO61Kpdwplq51q5crzfrVTq9+r9Xqd4oXm81ep9Ts9jrl261OInrFSiyKFYWLolIRi54SiGavk4i7lVKp2yt1FKlXDExoolZXsOqVespqRZEqd6MTsEq8ohKoaoL+PXCiEZVQ5KOakpgEIi+VZvEVJxytVj0lrXYmqonoZeJIFBWpY0nayjuK0ukpzopcut1ZMRXrlnRFcUp3Ks4olRSx0klEUVEqnYozJb2SAkWl26y0ajVnW1E6JUVxvN/rXLmjWIpScqZcIasBCSVIdkB0EQI="  
   let buf = Buffer.from(str, "base64")
 
-  console.log(decodeRLE(buf))
+let x = decodeRLE(buf)
+
+for (let i of x.runs) console.log(i)
+
