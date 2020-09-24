@@ -61,8 +61,7 @@ function decodeRuns(buf) {
     return {first, runs:res}
   }
 
-  function decodeRLE(buf) {
-    let {first, runs} = decodeRuns(buf)
+  function runsToList(first, runs) {
     let cur = first
     let res = []
     let acc = 0
@@ -76,6 +75,11 @@ function decodeRuns(buf) {
     return res
   }
 
+  function decodeRLE(buf) {
+    let {first, runs} = decodeRuns(buf)
+    return runsToList(first, runs)
+  }
+
   let str = "XC217tRWVGWpoqzc6kiVFbuWiFMRippih6JZKla+lwnF73RjsaRsVUoVZU8RO61Kpdwplq51q5crzfrVTq9+r9Xqd4oXm81ep9Ts9jrl261OInrFSiyKFYWLolIRi54SiGavk4i7lVKp2yt1FKlXDExoolZXsOqVespqRZEqd6MTsEq8ohKoaoL+PXCiEZVQ5KOakpgEIi+VZvEVJxytVj0lrXYmqonoZeJIFBWpY0nayjuK0ukpzopcut1ZMRXrlnRFcUp3Ks4olRSx0klEUVEqnYozJb2SAkWl26y0ajVnW1E6JUVxvN/rXLmjWIpScqZcIasBCSVIdkB0EQI="  
   let buf = Buffer.from(str, "base64")
 
@@ -83,3 +87,4 @@ let x = decodeRLE(buf)
 // console.log(x)
 for (let i of x) console.log(i)
 
+console.log(runsToList(0, [0,2]))
