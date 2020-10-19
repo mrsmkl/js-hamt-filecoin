@@ -100,6 +100,9 @@ function decodeAux(schema, data) {
   if (schema === 'int' || schema === 'buffer' || schema === 'bool') {
     return data
   }
+  if (schema === 'cid' && !data) {
+    return null
+  }
   if (schema === 'cid') {
     return data['/']
   }
