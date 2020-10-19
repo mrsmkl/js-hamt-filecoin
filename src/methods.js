@@ -1,6 +1,6 @@
 
 const cbor = require('cbor')
-const hamt = require('../../hamt/hamt/index')
+const hamt = require('./hamt')
 const blake = require('blakejs')
 const address = require('@openworklabs/filecoin-address')
 const BN = require('bn.js')
