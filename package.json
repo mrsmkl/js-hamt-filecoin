@@ -1,6 +1,6 @@
 {
   "name": "js-hamt-filecoin",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Javascript implementation of a HAMT using ipld",
   "repository": {
     "type": "git",

@@ -57,8 +57,35 @@ async function forEachRoot(root, load, cb) {
   return forEach(root.node, root.height, 0, load, cb)
 }
 
+async function lookup(num, node, height, offset, load) {
+  if (height == 0) {
+    for (let i = 0; i < node.length; i++) {
+      if (offset + i === num) return node[i]
+    }
+    return null
+  }
+
+  const subCount = nodesForHeight(height)
+
+  for (let i = 0; i < node.length; i++) {
+    if (offset + (i+1)*subCount > num) {
+      if (!node[i]) return null
+      let dta = await load(node[i]['/'])
+      // console.log(dta, height)
+      let sub = readNode(dta, height-1)
+      return lookup(num, sub, height-1, offset+i*subCount, load)
+    }
+  }
+  return null
+}
+
+async function lookupRoot(root, num, load) {
+  return lookup(num, root.node, root.height, 0, load)
+}
+
 module.exports = {
   readRoot,
   forEachRoot,
+  lookupRoot,
 }
 

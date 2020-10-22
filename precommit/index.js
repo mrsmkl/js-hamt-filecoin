@@ -59,7 +59,8 @@ async function main() {
   console.log(JSON.stringify(data,null,2))
   console.log(JSON.stringify(amt.readRoot(data),null,2))
 
-  await amt.forEachRoot(amt.readRoot(data), load, console.log)
+  // await amt.forEachRoot(amt.readRoot(data), load, console.log)
+  console.log(await amt.lookupRoot(amt.readRoot(data), 111215, load))
   // console.log(methods.decode(power, data))
   // console.log(JSON.stringify(await methods.decode(schema, data).asStream(load, (a,b) => console.log(a,b)), null, 2))
   // console.log(JSON.stringify(await methods.decode(schema, data).asObject(load), null, 2))
