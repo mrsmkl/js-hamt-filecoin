@@ -141,7 +141,7 @@ function decodeAux(schema, data) {
       return data.map(a => decodeAux(schema[1], a))
     }
     if (schema[0] === 'cbor') {
-      return decodeAux(schema[1], cbor.decodeAux(data))
+      return decodeAux(schema[1], cbor.decode(data))
     }
     if (schema.length !== data.length) throw new Error('schema and data length do not match')
     if (isType(schema[0])) {
